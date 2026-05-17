@@ -1,0 +1,17 @@
+# Large dataset files
+covid19-image-dataset.zip
+covid19_dataset/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+__pycache__/
+
+# Word temp files
+~$*.docx
+
+# Environment
+.env
+*.pyc
+
+# VS Code
+.vscode/

@@ -1,0 +1,11 @@
+Mini Project-8 Image classification using CNN
+Submission Date - 22 May 2026
+
+Important Instructions
+▪️ Submit your Mini project file with your name as the filename.
+▪️ File format must be Jupyter notebook.
+▪️ Upload the Mini Project using the Assignment Checker in the Batch 13 section.
+▪️ Select the Project section to upload.
+▪️ Access the Mini Project- 8 through your LMS portal (within your course).
+
+Strictly follow the note
