@@ -55,7 +55,7 @@ html, body, [class*="css"] {
 .main .block-container { padding: 2rem 3rem; max-width: 1400px; }
 
 /* ── Hide default Streamlit elements ── */
-#MainMenu, footer, header { visibility: hidden; }
+footer, header { visibility: hidden; }
 
 /* ── Hero banner ── */
 .hero-banner {
