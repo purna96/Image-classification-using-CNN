@@ -5,8 +5,7 @@ Premium UI: dark theme, Plotly gauge, risk badges, animated cards.
 """
 
 import streamlit as st
-import tensorflow as tf
-from tensorflow import keras
+import onnxruntime as ort
 from PIL import Image
 import numpy as np
 import plotly.graph_objects as go
@@ -279,7 +278,7 @@ footer, header { visibility: hidden; }
 
 # ─── Constants ─────────────────────────────────────────────────────────────────
 IMAGE_SIZE   = (128, 128)
-MODEL_PATH   = 'covid_detection_model.keras'
+MODEL_PATH   = 'covid_detection_model.onnx'
 CLASS_NAMES  = ['Covid', 'Normal', 'Viral Pneumonia']
 
 CLASS_CONFIG = {
@@ -314,7 +313,7 @@ CLASS_CONFIG = {
 def load_model():
     if not os.path.exists(MODEL_PATH):
         return None
-    return keras.models.load_model(MODEL_PATH)
+    return ort.InferenceSession(MODEL_PATH, providers=['CPUExecutionProvider'])
 
 # ─── Preprocessing ──────────────────────────────────────────────────────────────
 def preprocess(image: Image.Image) -> np.ndarray:
@@ -533,7 +532,8 @@ with right_col:
         with st.spinner("🧠 Analyzing X-ray..."):
             time.sleep(0.5)                       # brief pause for UX
             arr = preprocess(image)
-            predictions = model.predict(arr, verbose=0)[0]
+            input_name   = model.get_inputs()[0].name
+            predictions  = model.run(None, {input_name: arr})[0][0]
 
         idx        = int(np.argmax(predictions))
         pred_class = CLASS_NAMES[idx]

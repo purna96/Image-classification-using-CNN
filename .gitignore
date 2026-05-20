@@ -2,6 +2,10 @@
 covid19-image-dataset.zip
 covid19_dataset/
 
+# Intermediate model files (keep only .onnx)
+covid_saved_model/
+covid_detection_model.keras
+
 # Jupyter checkpoints
 .ipynb_checkpoints/
 __pycache__/
