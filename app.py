@@ -237,6 +237,43 @@ footer, header { visibility: hidden; }
 
 /* ── Plotly chart background ── */
 .js-plotly-plot .plotly .bg { fill: transparent !important; }
+
+/* ── Deploy Button ── */
+.deploy-section {
+    background: linear-gradient(135deg, rgba(88,166,255,0.1), rgba(88,166,255,0.05));
+    border: 2px solid var(--accent-blue);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+}
+.deploy-button {
+    background: linear-gradient(135deg, #58a6ff, #388bfd) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+    padding: 0.8rem 2rem !important;
+    font-size: 1rem !important;
+    width: 100% !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+}
+.deploy-button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(88,166,255,0.3) !important;
+}
+.deploy-badge {
+    display: inline-block;
+    background: rgba(88,166,255,0.2);
+    border: 1px solid var(--accent-blue);
+    color: var(--accent-blue);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 1rem;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -394,6 +431,18 @@ with st.sidebar:
     st.markdown("`JPG` · `JPEG` · `PNG`")
 
     st.markdown("---")
+    st.markdown("### 🚀 Deploy This App")
+    st.markdown("""
+Deploy to **Streamlit Cloud** for free:
+- 📤 Push to GitHub
+- 🔗 Visit share.streamlit.io
+- ✨ Deploy in seconds
+- 🌍 Get a public URL
+
+[Learn More →](https://docs.streamlit.io/streamlit-cloud/get-started)
+    """)
+
+    st.markdown("---")
     st.caption("Built with TensorFlow · VGG16 · Streamlit")
 
 # ─── Hero Banner ────────────────────────────────────────────────────────────────
@@ -533,6 +582,99 @@ with right_col:
                 f"</div>",
                 unsafe_allow_html=True,
             )
+        # ── Deploy Section ────────────────────────────────────────────────
+        st.markdown('<div class="section-header" style="margin-top:2rem;">🚀 Deploy & Export</div>', unsafe_allow_html=True)
+        
+        # Deploy to Streamlit Cloud Button
+        col_deploy, col_placeholder = st.columns([2, 1])
+        with col_deploy:
+            st.markdown("""
+            <div class="deploy-section" style="margin-bottom:1rem;">
+                <div class="deploy-badge">🌐 Cloud Deployment</div>
+                <p style="color:#e6edf3;font-size:0.95rem;margin-bottom:1rem;">
+                    Deploy this app to Streamlit Cloud for free and share it with anyone!
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            col_btn1, col_btn2 = st.columns(2)
+            with col_btn1:
+                if st.button("🚀 Deploy to Streamlit Cloud", use_container_width=True, key="deploy_streamlit"):
+                    st.markdown("""
+                    <div style="background:rgba(88,166,255,0.1);border:1px solid #58a6ff;border-radius:10px;padding:1.2rem;margin-top:1rem;">
+                        <h3 style="color:#58a6ff;margin-top:0;">📋 Steps to Deploy:</h3>
+                        <ol style="color:#e6edf3;line-height:1.8;">
+                            <li><b>Push to GitHub:</b> Upload this app to a GitHub repository</li>
+                            <li><b>Visit:</b> <a href="https://share.streamlit.io" target="_blank" style="color:#58a6ff;text-decoration:underline;">share.streamlit.io</a></li>
+                            <li><b>Authenticate:</b> Sign in with your GitHub account</li>
+                            <li><b>Deploy:</b> Select your repository and branch</li>
+                            <li><b>Share:</b> Get a public URL to share your app!</li>
+                        </ol>
+                        <p style="color:#8b949e;font-size:0.85rem;margin-top:1rem;">
+                            ℹ️ <b>Note:</b> Make sure your <code style="background:#161b22;padding:2px 6px;border-radius:4px;">requirements.txt</code> includes all dependencies.
+                        </p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    st.success("✅ Follow the steps above to deploy your app to Streamlit Cloud!")
+            
+            with col_btn2:
+                st.link_button("🔗 Go to Streamlit", "https://share.streamlit.io", use_container_width=True)
+        
+        st.markdown("---")
+        
+        # Export Section
+        st.markdown("""
+        <div class="deploy-section" style="margin-bottom:1rem;">
+            <div class="deploy-badge">📤 Export Results</div>
+            <p style="color:#e6edf3;font-size:0.95rem;margin-bottom:1rem;">
+                Download your analysis results in multiple formats for sharing and record-keeping.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Create export data
+        export_data = {
+            "Filename": uploaded_file.name,
+            "Prediction": pred_class,
+            "Confidence": f"{confidence:.2f}%",
+            "Risk_Level": cfg['risk'],
+            "COVID_Score": f"{float(predictions[0])*100:.4f}%",
+            "Normal_Score": f"{float(predictions[1])*100:.4f}%",
+            "Pneumonia_Score": f"{float(predictions[2])*100:.4f}%",
+            "Timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+        }
+
+        # Download buttons in columns
+        col_down1, col_down2, col_down3 = st.columns(3)
+
+        with col_down1:
+            import csv
+            import io
+            csv_buffer = io.StringIO()
+            writer = csv.DictWriter(csv_buffer, fieldnames=export_data.keys())
+            writer.writeheader()
+            writer.writerow(export_data)
+            st.download_button(
+                label="📊 CSV Report",
+                data=csv_buffer.getvalue(),
+                file_name=f"analysis_{time.strftime('%Y%m%d_%H%M%S')}.csv",
+                mime="text/csv",
+                key="csv_button",
+            )
+
+        with col_down2:
+            import json
+            json_data = json.dumps(export_data, indent=2)
+            st.download_button(
+                label="📋 JSON Report",
+                data=json_data,
+                file_name=f"analysis_{time.strftime('%Y%m%d_%H%M%S')}.json",
+                mime="application/json",
+                key="json_button",
+            )
+
+        with col_down3:
+            st.metric("Status", "✅ Ready")
 
     else:
         st.markdown("""
